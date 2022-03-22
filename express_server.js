@@ -3,6 +3,7 @@ const req = require("express/lib/request");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require('body-parser');
+const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.set('view engine', 'ejs');
@@ -62,6 +63,11 @@ app.get('/urls.json', (req, res) => {
 
 app.get('/hello', (req, res) => {
     res.send('<html><body>Hello <b>World</b></body></html>\n')
+})
+
+app.post('/urls/:shortURL/delete', (req,res) => {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls')
 })
 
 app.listen(PORT, () => {
