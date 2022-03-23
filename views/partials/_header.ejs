@@ -1,47 +1,38 @@
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success">
-      <a class="navbar-brand" href="/urls">TinyApp</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-item nav-link" href="/urls">My URLs</a>
-          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        </div>
-        <div>
-          <div class="input-group mb-3" style = "position:relative; left:700px; top:2px">
-
-              <% if (username) {
-                %>
-              <label for="/login"><%= username %></label>
-              <form method ='post' action="/logout"><button class="btn btn-danger" type="submit">Logout</button></form>
-              
-              <% }else { %>
-                <form method="post" action="/login">
-                <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                <button class="btn btn-danger" type="submit">Login</button>
-              </form>
-              <% } %>
-
-          </div>
-        </div>
+  <nav class="navbar navbar-expand-md navbar-dark" style ="background-color: #398027;">
+    <a class="navbar-brand" href="/home">TinyApp</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse justify-content-between"
+      id="navbarNavAltMarkup"
+    >
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/urls">My URLs</a>
+        <% if(user === undefined){%>
+        <a class="nav-item nav-link" href="/login">Create New URL</a>
       </div>
-    </nav>
-  </header>
-
-
-  <!-- <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success">
-      <a class="navbar-brand" href="/urls">TinyApp</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-item nav-link" href="/urls">My URLs</a>
-          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        </div>
+      <a class=class="nav-item nav-link" href="/login">Login</a>
+      <a class=class="nav-item nav-link" href="/registration">Register</a>  
+      <% } else{%>
+      <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-    </nav>
-  </header> -->
+      <form class="form-inline" method="POST" action="/logout">
+        <div class="mr-sm-2" style="color:var(--white)">Logged in As: <%=user.email%></div>
+        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">
+          Logout
+        </button>
+      </form>
+      <% }%>
+    </div>
+  </nav>
+</header>
