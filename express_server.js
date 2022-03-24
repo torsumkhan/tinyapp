@@ -33,6 +33,11 @@ const urlsForUser = function (id) {
   return urlsForThisUser;
 };
 
+// const getUserByEmail = function(email, database) {
+//     req.body;
+//     return user;
+//   };
+
 // const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
 //   "9sm5xK": "http://www.google.com"
@@ -60,6 +65,22 @@ const users = {
     email: "u2@example.com",
     password: "456",
   },
+};
+
+// const getUserByEmail = function (email, userDB) {
+//   const userValues = Object.values(userDB);
+//   const findEmail = userValues.find((user) => email === user.email);
+//   return findEmail;
+// };
+
+const findUserByEmail = (email) => {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
 };
 
 app.get("/", (req, res) => {
@@ -94,18 +115,20 @@ app.post("/login", (req, res) => {
     return res.status(400);
   }
 
-  const userValues = Object.values(users);
-  const findEmail = userValues.find((user) => email === user.email);
-  console.log("This is find email", findEmail);
+  const user = findUserByEmail(email);
+
+  //   const userValues = Object.values(users);
+  //   const findEmail = userValues.find((user) => email === user.email);
+  //   console.log("This is find email", findEmail);
   // const findPass = userValues.find(user => password === user.password)
   //   console.log("This is findPass:", findPass);
-  if (!findEmail) {
-    console.log(findEmail);
+  if (!user) {
+    // console.log(findEmail);
     return res.status(403).send("This email not found");
     // return res.redirect('/registration')
   } else {
     // console.log("password", password, findEmail.hashedPassword);
-    if (!bcrypt.compareSync(password, findEmail.hashedPassword)) {
+    if (!bcrypt.compareSync(password, user.hashedPassword)) {
       res.send("Password did not match");
     } else {
       res.session("user_id", findEmail.id);
@@ -158,9 +181,9 @@ app.post("/register", (req, res) => {
     return res.status(400);
   }
 
-  const userValues = Object.values(users);
-  const findEmail = userValues.find((user) => email === user.email);
-  if (findEmail) {
+  const user = findUserByEmail(email);
+
+  if (user) {
     return res.status(400).send("This email found");
   } else {
     let user = { id, email, hashedPassword }; /////////////////////
