@@ -14,19 +14,40 @@ function generateRandomString() {
     return Math.random().toString(36).slice(-6)
 }
 
+const urlsForUser = function (id) {
+        
+    const urlsForThisUser = {}
+    for (let key in urlDatabase) {
+        if (id === urlDatabase[key].userID) {
+            urlsForThisUser[key] = urlDatabase[key].longURL
+        
+        }
+    } return urlsForThisUser
+}
+
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+    b6UTxQ: {
+          longURL: "https://www.tsn.ca",
+          userID: "user1ID"
+      },
+      i3BoGr: {
+          longURL: "https://www.google.ca",
+          userID: "user2ID"
+      }
+  };
 
 const users = {'user1ID': {
-    id: "1ID",
+    id: "user1ID",
     email: "u1@example.com",
     password: '123'
 },
 'user2ID': {
-    id: '2ID',
+    id: 'user2ID',
     email: 'u2@example.com',
     password: '456'
 }
@@ -63,7 +84,8 @@ app.post('/login', (req, res) => {
     const findPass = userValues.find(user => password === user.password)
     if(!findEmail){
         console.log(findEmail)
-        return res.status(403).send('This email not found')
+        // return res.status(403).send('This email not found')
+        return res.redirect('/registration')
     }
 
     if(findEmail && !findPass) {
@@ -77,12 +99,15 @@ app.post('/login', (req, res) => {
 
 app.get('/urls', (req, res) => {
     // const id = req.cookies['user_id']
-    // const user = users[id] //
-    const userValues = Object.values(users);
     const user_id = req.cookies["user_id"]
-    const findUser = userValues.find(user => user_id === user_id)
-    console.log(findUser)
-    const templateVars = {urls: urlDatabase, user: findUser};
+    console.log("This is the user id", user_id)
+    // const user = users[id] //
+    
+
+    const userValues = Object.values(users);
+    const findUser = userValues.find(user => user_id === user.id)
+    console.log("This is find user", findUser)
+    const templateVars = {urls: urlsForUser(user_id), user: findUser};
     res.render('urls_index', templateVars);
 })
 
@@ -114,20 +139,36 @@ app.get('/urls/new', (req,res) => {
     res.render('urls_new', templateVars);
 })
 
-app.get('urls/:id', (req, res) => {
-    const templateVars = {user:users[req.cookies["user_id"]]}
-    res.render('urls_id', templateVars)
-})
+// app.get('urls/:id', (req, res) => {
+//     const templateVars = {user:users[req.cookies["user_id"]]}
+//     res.render('urls_id', templateVars)
+// })
 
 app.post('/urls/:shortURL', (req,res) => {
     const newLongURL = (req.body.editURL);
-    urlDatabase[req.params.shortURL] = newLongURL
+    urlDatabase[req.params.shortURL].longURL = newLongURL
     res.redirect('/urls/')
 })
 
+
 app.get('/urls/:shortURL', (req, res) => {
-    const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user:users[req.cookies["user_id"]]};
-    console.log(req.params)
+    const userID = req.cookies["user_id"];
+    console.log("this is ccd", userID)
+    if(!userID) {
+        return res.status(404).send("Please login.");
+    } else if (!urlDatabase[req.params.shortURL]) {
+        return res.status(404).send("This data do not exist")
+    } else if (userID !== urlDatabase[req.params.shortURL].userID) {
+        return res.status(404).send("You do not have this url")
+    }
+    
+    const shortURL = req.params.shortURL
+    const urlObject = urlDatabase[shortURL]
+    const longURL = urlObject.longURL
+    const templateVars = {longURL:longURL, shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user:users[req.cookies["user_id"]]};
+    if(urlObject.userID !== req.cookies["user_id"]){
+        return res.send("/urls")
+    }
     res.render('urls_show', templateVars);
 })
 
@@ -137,9 +178,10 @@ app.get('/urls/:shortURL', (req, res) => {
 
 
 app.post('/urls', (req, res) => {
+    const userid = req.cookies.user_id
     const longURL = req.body.longURL;
     const shortURL = generateRandomString()
-    urlDatabase[shortURL] = longURL;
+    urlDatabase[shortURL] = {longURL: longURL, userID:userid};
     console.log(urlDatabase)
     res.redirect(`/urls/${shortURL}`)
 })
@@ -167,16 +209,24 @@ app.get('/hello', (req, res) => {
 // })
 
 app.post('/logout', (req,res) => {
-    const templateVars = {urls: urlDatabase, user:users[req.cookies["user_id"]]}
-    res.render('urls_index', templateVars)
+    // const templateVars = {urls: urlDatabase, user:users[req.cookies["user_id"]]}
+    // res.render('urls_index', templateVars)
     res.clearCookie('user_id')
-    // res.redirect('/urls')
+    res.redirect('/urls')
 
 })
 
 app.post('/urls/:shortURL/delete', (req,res) => {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect('/urls')
+    const userid = req.cookies.user_id
+    const userIDfromdataBase = urlDatabase[req.params.shortURL].userID
+
+    if (userid === userIDfromdataBase) {
+        delete urlDatabase[req.params.shortURL];
+        res.redirect('/urls')
+    } else {
+        res.status(404).send("You cannot delete this URL")
+    }
+    
 })
 
 app.listen(PORT, () => {
