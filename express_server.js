@@ -1,6 +1,7 @@
 const express = require("express");
 const req = require("express/lib/request");
 const bcrypt = require("bcryptjs");
+const findUserByEmail = require("./helpers");
 const cookieSession = require("cookie-session");
 const app = express();
 const PORT = 9000; // default port 8080
@@ -73,15 +74,15 @@ const users = {
 //   return findEmail;
 // };
 
-const findUserByEmail = (email) => {
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
+// const findUserByEmail = (email) => {
+//   for (const userId in users) {
+//     const user = users[userId];
+//     if (user.email === email) {
+//       return user;
+//     }
+//   }
+//   return null;
+// };
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -115,7 +116,8 @@ app.post("/login", (req, res) => {
     return res.status(400);
   }
 
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, users);
+  console.log(user);
 
   //   const userValues = Object.values(users);
   //   const findEmail = userValues.find((user) => email === user.email);
@@ -131,7 +133,7 @@ app.post("/login", (req, res) => {
     if (!bcrypt.compareSync(password, user.hashedPassword)) {
       res.send("Password did not match");
     } else {
-      res.session("user_id", findEmail.id);
+      req.session.user_id = user.id;
       res.redirect("/urls");
     }
   }
@@ -181,7 +183,7 @@ app.post("/register", (req, res) => {
     return res.status(400);
   }
 
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, users);
 
   if (user) {
     return res.status(400).send("This email found");
