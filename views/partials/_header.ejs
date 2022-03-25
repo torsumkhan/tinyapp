@@ -19,11 +19,11 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <% if(user === undefined){%>
-        <a class="nav-item nav-link" href="/login">Create New URL</a>
+        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
       <div>
       <a class=class="nav-item nav-link" href="/login"><button type="submit" class="btn btn-outline-light my-2 my-sm-0">Login</button></a>
-      <a class=class="nav-item nav-link" href="/registration"><button type="submit" class="btn btn-primary" style="background-color: white; color: black; border: 0;">Register</button></a>  </div>
+      <a class=class="nav-item nav-link" href="/register"><button type="submit" class="btn btn-primary" style="background-color: white; color: black; border: 0;">Register</button></a>  </div>
       <% } else{%>
       <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>

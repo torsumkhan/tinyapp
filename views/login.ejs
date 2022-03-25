@@ -22,6 +22,9 @@
         
                     <div class="form-outline mb-4">
                         <form  action="/login" method="POST">
+                          <% if (error) {%>
+                            Please Login to create new URL
+                         <% }%>
                       <input type="email" id="typeEmailX-2" name ="email" class="form-control form-control-lg" />
                       <label class="form-label" for="typeEmailX-2">Email</label>
                     </div>
@@ -33,15 +36,6 @@
                     </form>
                     </div>
 
-        <!-- <h3>Login</h3>
-        <form class="form-inline" action="/login" method="POST">
-          <div class="form-group mb-2">
-            <label for="login">LOGIN:</label>
-            <input class="form-control" type="email" name="email" placeholder="Enter email" style="width: 300px; margin: 1em">
-            <input class="form-control" type="password" name="password" placeholder="Enter Password" style="width: 300px; margin: 1em">
-            <button type="submit" class="btn btn-primary">Login</button>
-          </div>
-        </form> -->
       </main>
 
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
